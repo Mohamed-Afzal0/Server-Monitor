@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Server Monitor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <div id="toast-container"></div>
+
+  <h1>🖥️ Server Monitor</h1>
+  <div id="timestamp">Loading...</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>⚡ CPU</h2>
+      <div class="stat" id="cpu-percent">--%</div>
+      <div class="sub" id="cpu-cores">-- cores</div>
+      <canvas id="cpuChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>🧠 Memory</h2>
+      <div class="stat" id="mem-percent">--%</div>
+      <div class="sub" id="mem-detail">-- / -- GB</div>
+      <canvas id="memChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>💾 Disk</h2>
+      <div class="stat" id="disk-percent">--%</div>
+      <div class="sub" id="disk-detail">-- / -- GB</div>
+      <canvas id="diskChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>🌐 Network</h2>
+      <div class="network-grid">
+        <div class="net-box">
+          <div class="label">↑ Sent</div>
+          <div class="value" id="net-sent">-- MB</div>
+        </div>
+        <div class="net-box">
+          <div class="label">↓ Received</div>
+          <div class="value" id="net-recv">-- MB</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/script.js"></script>
+
+</body>
+</html>
