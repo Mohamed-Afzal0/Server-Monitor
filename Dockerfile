@@ -1,18 +1,26 @@
-# Base image - Python 3.11 lightweight version
 FROM python:3.11-slim
 
-# Set working directory inside container
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Copy and install dependencies first
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Install minimal build dependencies for packages that need compilation
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+	   build-essential gcc libssl-dev libffi-dev \
+	&& rm -rf /var/lib/apt/lists/*
 
-# Copy the rest of the app
-COPY . .
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --upgrade pip \
+	&& pip install --no-cache-dir -r requirements.txt
 
-# Expose port 5000
+# Copy application source
+COPY . ./
+
+# Default port (adjust if your app uses a different one)
 EXPOSE 5000
 
-# Command to run the app
+# Run the application
 CMD ["python", "app.py"]
