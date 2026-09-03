@@ -127,6 +127,7 @@ async function fetchMetrics() {
 
     document.getElementById('cpu-percent').textContent = data.cpu.usage_percent + '%';
     document.getElementById('cpu-cores').textContent   = data.cpu.core_count + ' logical cores';
+    document.getElementById('cpu-name').textContent    = data.cpu.processor_name || 'Unknown CPU';
     updateChart(cpuChart, data.cpu.usage_percent);
 
     document.getElementById('mem-percent').textContent = data.memory.usage_percent + '%';

@@ -1,11 +1,26 @@
-import psutil
-import datetime
+import psutil, datetime, os, platform, subprocess, re
 
 def get_cpu():
-    return{ 
-        "usage_percent":psutil.cpu_percent(interval=1),
-        "core_count":psutil.cpu_count(logical=True),
+    return{
+        "usage_percent": psutil.cpu_percent(interval=1),
+        "core_count": psutil.cpu_count(logical=True),
+        "processor_name": get_processor_name(),
     }
+
+def get_processor_name():
+    if platform.system() == "Windows":
+        return platform.processor()
+    elif platform.system() == "Darwin":
+        os.environ['PATH'] = os.environ['PATH'] + os.pathsep + '/usr/sbin'
+        command ="sysctl -n machdep.cpu.brand_string"
+        return subprocess.check_output(command).strip()
+    elif platform.system() == "Linux":
+        command = "cat /proc/cpuinfo"
+        all_info = subprocess.check_output(command, shell=True).decode().strip()
+        for line in all_info.split("\n"):
+            if "model name" in line:
+                return re.sub( ".*model name.*:", "", line,1)
+    return ""
 
 def get_memory():
     mem = psutil.virtual_memory()
