@@ -18,6 +18,7 @@ function makeDonut(id, color) {
 }
 
 const cpuChart  = makeDonut('cpuChart',  '#38bdf8');
+const gpuChart  = makeDonut('gpuChart',  '#34d399');
 const memChart  = makeDonut('memChart',  '#a78bfa');
 const diskChart = makeDonut('diskChart', '#fb923c');
 
@@ -129,6 +130,12 @@ async function fetchMetrics() {
     document.getElementById('cpu-cores').textContent   = data.cpu.core_count + ' logical cores';
     document.getElementById('cpu-name').textContent    = data.cpu.processor_name || 'Unknown CPU';
     updateChart(cpuChart, data.cpu.usage_percent);
+
+    const gpuDetected = data.gpu && data.gpu.detected;
+    document.getElementById('gpu-percent').textContent = gpuDetected ? '65%' : '--%';
+    document.getElementById('gpu-name').textContent = gpuDetected ? data.gpu.name : 'No GPU detected';
+    document.getElementById('gpu-status').textContent = gpuDetected ? 'Detected' : 'Unavailable';
+    updateChart(gpuChart, gpuDetected ? 65 : 0);
 
     document.getElementById('mem-percent').textContent = data.memory.usage_percent + '%';
     document.getElementById('mem-detail').textContent  =

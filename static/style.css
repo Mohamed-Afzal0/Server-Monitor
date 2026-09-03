@@ -51,6 +51,12 @@ h1 {
   margin-bottom: 12px;
 }
 
+#gpu-name {
+  font-size: 1rem;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
 .sub {
   font-size: 0.85rem;
   color: #64748b;
