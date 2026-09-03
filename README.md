@@ -38,7 +38,7 @@ A real-time system monitoring tool built with Python and Flask, featuring a live
 
 ## ⚡ Quick Start
 
-### Option 1 — Run with Python
+### Run with Python
 
 ```bash
 # Clone the repo
@@ -50,24 +50,6 @@ pip install -r requirements.txt
 
 # Run the app
 python app.py
-```
-
-Then open your browser at `http://localhost:5000`
-
----
-
-### Option 2 — Run with Docker
-
-```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/server-monitor.git
-cd server-monitor
-
-# Build the image
-docker build -t server-monitor .
-
-# Run the container
-docker run -p 5000:5000 --network=host server-monitor
 ```
 
 Then open your browser at `http://localhost:5000`
