@@ -58,7 +58,8 @@ def get_gpu():
 
             return {
                 "detected": False,
-                "name": "No GPU detected"
+                "name": "No GPU detected",
+                "usage_percent": None
             }
 
         elif platform.system() == "Windows":
@@ -72,14 +73,16 @@ def get_gpu():
                 if lines:
                     return {
                         "detected": True,
-                        "name": lines[0]
+                        "name": lines[0],
+                        "usage_percent": None
                     }
             except Exception:
                 pass
 
             return {
                 "detected": False,
-                "name": "No GPU detected"
+                "name": "No GPU detected",
+                "usage_percent": None
             }
 
         elif platform.system() == "Darwin":
@@ -92,20 +95,23 @@ def get_gpu():
                 if output.strip():
                     return {
                         "detected": True,
-                        "name": output.split(":", 1)[1].strip()
+                        "name": output.split(":", 1)[1].strip(),
+                        "usage_percent": None
                     }
             except Exception:
                 pass
 
             return {
                 "detected": False,
-                "name": "No GPU detected"
+                "name": "No GPU detected",
+                "usage_percent": None
             }
 
     except Exception:
         return {
             "detected": False,
-            "name": "No GPU detected"
+            "name": "No GPU detected",
+            "usage_percent": None
         }
 
 def get_memory():

@@ -2,7 +2,7 @@
 
 body {
   background: #0f172a;
-  color: #e2e8f0;
+  color: white;
   font-family: 'Segoe UI', sans-serif;
   padding: 30px;
 }
@@ -53,7 +53,6 @@ h1 {
 
 #gpu-name {
   font-size: 1rem;
-  color: #cbd5e1;
   margin-bottom: 8px;
 }
 

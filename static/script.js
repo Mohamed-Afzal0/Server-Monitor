@@ -132,10 +132,11 @@ async function fetchMetrics() {
     updateChart(cpuChart, data.cpu.usage_percent);
 
     const gpuDetected = data.gpu && data.gpu.detected;
-    document.getElementById('gpu-percent').textContent = gpuDetected ? '65%' : '--%';
+    const gpuUsage = (data.gpu && typeof data.gpu.usage_percent === 'number') ? data.gpu.usage_percent : null;
+    document.getElementById('gpu-percent').textContent = gpuUsage !== null ? gpuUsage + '%' : '--%';
     document.getElementById('gpu-name').textContent = gpuDetected ? data.gpu.name : 'No GPU detected';
     document.getElementById('gpu-status').textContent = gpuDetected ? 'Detected' : 'Unavailable';
-    updateChart(gpuChart, gpuDetected ? 65 : 0);
+    updateChart(gpuChart, gpuUsage !== null ? gpuUsage : 0);
 
     document.getElementById('mem-percent').textContent = data.memory.usage_percent + '%';
     document.getElementById('mem-detail').textContent  =
