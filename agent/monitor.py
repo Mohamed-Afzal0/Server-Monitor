@@ -1,4 +1,4 @@
-import psutil, datetime, os, platform, subprocess, re, shutil
+import psutil, datetime, os, platform, subprocess, re
 
 
 def run_command(command):
@@ -35,69 +35,6 @@ def get_processor_name():
                 return re.sub(".*model name.*:", "", line, 1)
     return ""
 
-def get_gpu():
-    try:
-        if platform.system() == "Linux":
-            if shutil.which("nvidia-smi"):
-                output = run_command("nvidia-smi --query-gpu=name --format=csv,noheader")
-                name = output.splitlines()[0].strip() if output else ""
-                if name:
-                    return {
-                        "detected": True,
-                        "name": name
-                    }
-
-            output = run_command("lspci | grep -i 'vga\\|3d\\|display'")
-            if output.strip():
-                return {
-                    "detected": True,
-                    "name": output.strip().splitlines()[0]
-                }
-
-            return {
-                "detected": False,
-                "name": "No GPU detected",
-                "usage_percent": None
-            }
-
-        elif platform.system() == "Windows":
-            output = run_command('wmic path win32_VideoController get name')
-            lines = [line.strip() for line in output.splitlines() if line.strip() and "Name" not in line]
-            if lines:
-                return {
-                    "detected": True,
-                    "name": lines[0],
-                    "usage_percent": None
-                }
-
-            return {
-                "detected": False,
-                "name": "No GPU detected",
-                "usage_percent": None
-            }
-
-        elif platform.system() == "Darwin":
-            output = run_command("system_profiler SPDisplaysDataType | grep 'Chipset' | head -n 1")
-            if output.strip():
-                return {
-                    "detected": True,
-                    "name": output.split(":", 1)[1].strip(),
-                    "usage_percent": None
-                }
-
-            return {
-                "detected": False,
-                "name": "No GPU detected",
-                "usage_percent": None
-            }
-
-    except Exception:
-        return {
-            "detected": False,
-            "name": "No GPU detected",
-            "usage_percent": None
-        }
-
 def get_memory():
     mem = psutil.virtual_memory()
     return {
@@ -125,7 +62,6 @@ def get_all_metrics():
     return {
         "timestamp": datetime.datetime.now().isoformat(),
         "cpu": get_cpu(),
-        "gpu": get_gpu(),
         "memory": get_memory(),
         "disk": get_disk(),
         "network": get_network()

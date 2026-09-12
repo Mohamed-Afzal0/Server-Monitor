@@ -8,17 +8,6 @@
 </head>
 <body>
   <div class="top-bar">
-    <div class="top-card">
-      <div class="mini-gauge-wrap">
-        <div id="gpuGauge" class="gauge mini-gauge" data-meter="gpu">
-          <div class="pointer"><div class="hand"></div></div>
-          <div class="center-ring"></div>
-          <div class="reading-value mini-reading" id="gpu-reading">0%</div>
-        </div>
-      </div>
-      <div class="mini-label">GPU</div>
-    </div>
-
     <div class="top-card network-card">
       <div class="network-header">Network</div>
       <div class="network-row"><span>RX</span><strong id="rx-speed">0.0 MB/s</strong></div>
@@ -30,9 +19,16 @@
     <section class="meter-card">
       <div class="gauge-wrap">
         <div id="cpuGauge" class="gauge" data-meter="cpu">
-          <div class="pointer"><div class="hand"></div></div>
-          <div class="center-ring"></div>
-          <div class="reading-value" id="cpu-reading">0%</div>
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <g class="ticks"></g>
+            <line class="needle" x1="100" y1="100" x2="174" y2="100" />
+            <circle class="track" cx="100" cy="100" r="80" />
+            <circle class="progress" cx="100" cy="100" r="80" />
+          </svg>
+          <div class="reading">
+            <div class="value" id="cpu-reading">0</div>
+            <div class="unit">%</div>
+          </div>
         </div>
       </div>
       <div class="meter-title">CPU</div>
@@ -42,9 +38,16 @@
     <section class="meter-card">
       <div class="gauge-wrap">
         <div id="memoryGauge" class="gauge" data-meter="memory">
-          <div class="pointer"><div class="hand"></div></div>
-          <div class="center-ring"></div>
-          <div class="reading-value" id="memory-reading">0%</div>
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <g class="ticks"></g>
+            <line class="needle" x1="100" y1="100" x2="174" y2="100" />
+            <circle class="track" cx="100" cy="100" r="80" />
+            <circle class="progress" cx="100" cy="100" r="80" />
+          </svg>
+          <div class="reading">
+            <div class="value" id="memory-reading">0</div>
+            <div class="unit">%</div>
+          </div>
         </div>
       </div>
       <div class="meter-title">Memory</div>
