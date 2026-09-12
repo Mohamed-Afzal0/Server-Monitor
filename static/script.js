@@ -2,12 +2,52 @@ const cpuGauge = document.getElementById('cpuGauge');
 const memoryGauge = document.getElementById('memoryGauge');
 const networkCard = document.querySelector('.network-card');
 const diskBox = document.getElementById('disk-box');
+const cpuTitle = document.getElementById('cpu-title');
+const memoryTitle = document.getElementById('memory-title');
+const infoButton = document.getElementById('info-button');
+const infoModal = document.getElementById('info-modal');
+const infoClose = document.getElementById('info-close');
+const infoWindow = document.querySelector('.info-window');
 const gaugeGeometry = new WeakMap();
 const gaugeCircumference = 2 * Math.PI * 80;
 const gaugeGapPercent = 0.3;
 const gaugeArcPercent = 1 - gaugeGapPercent;
 const gaugeArcLength = gaugeCircumference * gaugeArcPercent;
 const gaugeArcSweep = 360 * gaugeArcPercent;
+
+function setInfoModal(open) {
+  if (open) {
+    infoModal.classList.remove('closing');
+    infoModal.hidden = false;
+    infoButton.setAttribute('aria-expanded', 'true');
+    infoClose.focus();
+  } else {
+    if (infoModal.hidden || infoModal.classList.contains('closing')) {
+      return;
+    }
+
+    infoModal.classList.add('closing');
+    infoButton.setAttribute('aria-expanded', 'false');
+    window.setTimeout(() => {
+      infoModal.hidden = true;
+      infoModal.classList.remove('closing');
+      infoButton.focus();
+    }, 260);
+  }
+}
+
+infoButton.addEventListener('click', () => setInfoModal(true));
+infoClose.addEventListener('click', () => setInfoModal(false));
+infoModal.addEventListener('click', (event) => {
+  if (event.target === infoModal) {
+    setInfoModal(false);
+  }
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !infoModal.hidden) {
+    setInfoModal(false);
+  }
+});
 
 function initializeGauge(gauge) {
   const ticks = gauge.querySelector('.ticks');
@@ -66,6 +106,7 @@ function updateCpu(data) {
   setGaugeValue(cpuGauge, percent);
   const isAlert = percent > 50;
   setAlertState(cpuGauge, isAlert);
+  setAlertState(cpuTitle, isAlert);
   document.getElementById('cpu-reading').textContent = Math.round(percent);
   const processorName = data.cpu.processor_name || 'Unknown CPU';
   document.getElementById('cpu-name').textContent = processorName;
@@ -77,6 +118,7 @@ function updateMemory(data) {
   setGaugeValue(memoryGauge, percent);
   const isAlert = percent > 60;
   setAlertState(memoryGauge, isAlert);
+  setAlertState(memoryTitle, isAlert);
   document.getElementById('memory-reading').textContent = Math.round(percent);
   return isAlert;
 }
@@ -95,10 +137,11 @@ function updateDisk(data) {
   const total = Number(disk.total_gb) || 0;
   const used = Number(disk.used_gb) || 0;
   const percent = clampPercent(disk.usage_percent);
-  const box = document.getElementById('disk-box');
-  box.textContent = `HDD ${used.toFixed(1)} GB / ${total.toFixed(1)} GB (${Math.round(percent)}%)`;
+  document.getElementById('disk-used').textContent = used.toFixed(1);
+  document.getElementById('disk-total').textContent = total.toFixed(1);
+  document.getElementById('disk-percent').textContent = `${Math.round(percent)}%`;
   const isAlert = percent > 80;
-  setAlertState(box, isAlert);
+  setAlertState(diskBox, isAlert);
   return isAlert;
 }
 

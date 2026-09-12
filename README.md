@@ -1,17 +1,17 @@
-# 🖥️ Server Monitor Dashboard
+# Server Monitor Dashboard
 
-A real-time system monitoring tool built with Python and Flask, featuring a live web dashboard, Docker support, and browser alert notifications.
+A real-time system monitoring dashboard built with Python, Flask, psutil, HTML, CSS, and JavaScript.
 
 ---
 
 ## 🚀 Features
 
-- **Live Metrics** — Real-time CPU, Memory, Disk, and Network monitoring
-- **Interactive Dashboard** — Clean dark UI with live updating donut charts
-- **Browser Alerts** — Toast and push notifications when metrics exceed thresholds
-- **REST API** — Clean `/metrics` endpoint serving live data as JSON
-- **Dockerized** — Runs anywhere with a single Docker command
-- **CI/CD Pipeline** — GitHub Actions automatically builds and tests on every push
+- **Live Metrics** — CPU, memory, disk, and network monitoring through `/metrics`
+- **Circular Gauges** — Percentage-based SVG gauges with 5% and 10% tick marks
+- **Responsive Layout** — CPU and memory meters with centered network and HDD panels
+- **Threshold Alerts** — Red meter states for high CPU, memory, and disk usage
+- **Critical State** — Animated red network panel and background when all three thresholds are exceeded
+- **Information Modal** — Animated project and author information window
 
 ---
 
@@ -22,16 +22,13 @@ A real-time system monitoring tool built with Python and Flask, featuring a live
 | Backend | Python, Flask |
 | Monitoring | psutil |
 | Frontend | HTML5, CSS3, JavaScript |
-| Charts | Chart.js |
-| Container | Docker |
-| CI/CD | GitHub Actions |
+| Graphics | CSS and inline SVG |
 
 ---
 
 ## 📦 Prerequisites
 
 - Python 3.8+
-- Docker (optional)
 - Git
 
 ---
@@ -91,29 +88,19 @@ Then open your browser at `http://localhost:5000`
 
 ---
 
-## 🚨 Alert Thresholds
+## Alert Thresholds
 
 | Metric | Default Threshold |
 |--------|------------------|
-| CPU | > 80% |
-| Memory | > 85% |
-| Disk | > 90% |
+| CPU | > 50% |
+| Memory | > 60% |
+| Disk | > 80% |
 
-Alerts appear as toast notifications in the dashboard and browser push notifications.
-
----
-
-## 🐳 CI/CD Pipeline
-
-Every push to `main` automatically:
-1. Spins up an Ubuntu runner on GitHub Actions
-2. Builds the Docker image
-3. Runs the container
-4. Tests the `/metrics` endpoint
+The affected meter or HDD panel turns red when its threshold is exceeded. The network panel and page background enter the animated critical state only when CPU, memory, and disk are all above their thresholds.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 server-monitor/
 
@@ -122,24 +109,14 @@ server-monitor/
 │   └── monitor.py       # System metrics collector
 
 ├── static/
-
-│   ├── index.html       # Dashboard UI
-
-│   ├── style.css        # Styling
-
-│   └── script.js        # Charts, fetch, alerts
-
-├── .github/
-
-│   └── workflows/
-
-│       └── docker-build.yml  # CI/CD pipeline
+│   ├── index.html              # Dashboard UI
+│   ├── style.css               # Layout, gauges, alerts, and modal styling
+│   ├── script.js               # Metrics updates and interactions
+│   └── speed-dial-example.html # Standalone circular gauge prototype
 
 ├── app.py               # Flask API
 
-├── Dockerfile           # Container config
-
-└── requirements.txt     # Python dependencies
+└── requirements.txt            # Python dependencies
 
 ---
 
