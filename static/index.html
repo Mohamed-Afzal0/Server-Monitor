@@ -4,66 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Server Monitor</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-
-  <div id="toast-container"></div>
-
-  <h1>🖥️ Server Monitor</h1>
-  <div id="timestamp">Loading...</div>
-
-  <div class="grid">
-
-    <div class="card">
-      <h2>⚡ CPU</h2>
-      <div class="stat" id="cpu-percent">--%</div>
-      <div class="sub" id="cpu-cores">-- cores</div>
-      <div class="sub" id="cpu-name">--</div>
-      <canvas id="cpuChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>🎮 GPU</h2>
-      <div class="stat" id="gpu-percent">--%</div>
-      <div class="sub" id="gpu-name">--</div>
-      <div class="sub" id="gpu-status">Checking...</div>
-      <canvas id="gpuChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>🧠 Memory</h2>
-      <div class="stat" id="mem-percent">--%</div>
-      <div class="sub" id="mem-detail">-- / -- GB</div>
-      <canvas id="memChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>💾 Disk</h2>
-      <div class="stat" id="disk-percent">--%</div>
-      <div class="sub" id="disk-detail">-- / -- GB</div>
-      <canvas id="diskChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>🌐 Network</h2>
-      <div class="network-grid">
-        <div class="net-box">
-          <div class="label">↑ Sent</div>
-          <div class="value" id="net-sent">-- MB</div>
-        </div>
-        <div class="net-box">
-          <div class="label">↓ Received</div>
-          <div class="value" id="net-recv">-- MB</div>
+  <div class="top-bar">
+    <div class="top-card">
+      <div class="mini-gauge-wrap">
+        <div id="gpuGauge" class="gauge mini-gauge" data-meter="gpu">
+          <div class="pointer"><div class="hand"></div></div>
+          <div class="center-ring"></div>
+          <div class="reading-value mini-reading" id="gpu-reading">0%</div>
         </div>
       </div>
+      <div class="mini-label">GPU</div>
     </div>
 
+    <div class="top-card network-card">
+      <div class="network-header">Network</div>
+      <div class="network-row"><span>RX</span><strong id="rx-speed">0.0 MB/s</strong></div>
+      <div class="network-row"><span>TX</span><strong id="tx-speed">0.0 MB/s</strong></div>
+    </div>
   </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/static/script.js"></script>
+  <main class="dashboard">
+    <section class="meter-card">
+      <div class="gauge-wrap">
+        <div id="cpuGauge" class="gauge" data-meter="cpu">
+          <div class="pointer"><div class="hand"></div></div>
+          <div class="center-ring"></div>
+          <div class="reading-value" id="cpu-reading">0%</div>
+        </div>
+      </div>
+      <div class="meter-title">CPU</div>
+      <div id="cpu-name" class="cpu-name">Loading CPU...</div>
+    </section>
 
+    <section class="meter-card">
+      <div class="gauge-wrap">
+        <div id="memoryGauge" class="gauge" data-meter="memory">
+          <div class="pointer"><div class="hand"></div></div>
+          <div class="center-ring"></div>
+          <div class="reading-value" id="memory-reading">0%</div>
+        </div>
+      </div>
+      <div class="meter-title">Memory</div>
+    </section>
+  </main>
+
+  <div id="disk-box" class="disk-box">HDD: Loading...</div>
+  <div id="timestamp" class="timestamp">Loading...</div>
+
+  <script src="/static/script.js"></script>
 </body>
 </html>

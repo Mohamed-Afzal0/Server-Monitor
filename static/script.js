@@ -1,165 +1,76 @@
-// ─── Chart Setup ────────────────────────────────────────
-function makeDonut(id, color) {
-  return new Chart(document.getElementById(id), {
-    type: 'doughnut',
-    data: {
-      datasets: [{
-        data: [0, 100],
-        backgroundColor: [color, '#1e293b'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      cutout: '75%',
-      plugins: { legend: { display: false } },
-      animation: { duration: 500 }
-    }
-  });
+const cpuGauge = document.getElementById('cpuGauge');
+const memoryGauge = document.getElementById('memoryGauge');
+const gpuGauge = document.getElementById('gpuGauge');
+
+function clampPercent(value) {
+  return Math.min(100, Math.max(0, Number(value) || 0));
 }
 
-const cpuChart  = makeDonut('cpuChart',  '#38bdf8');
-const gpuChart  = makeDonut('gpuChart',  '#34d399');
-const memChart  = makeDonut('memChart',  '#a78bfa');
-const diskChart = makeDonut('diskChart', '#fb923c');
-
-function updateChart(chart, percent) {
-  chart.data.datasets[0].data = [percent, 100 - percent];
-  chart.update();
+function setGaugeValue(gauge, value) {
+  const percent = clampPercent(value);
+  const ratio = percent / 100;
+  gauge.style.setProperty('--gauge-value', ratio.toFixed(3));
 }
 
-// ─── Toast Notification ─────────────────────────────────
-function showToast(title, message) {
-  const container = document.getElementById('toast-container');
-
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.innerHTML = `
-    <div class="toast-title">🚨 ${title}</div>
-    <div class="toast-msg">${message}</div>
-  `;
-
-  container.appendChild(toast);
-
-  // Auto remove after 5 seconds
-  setTimeout(() => {
-    toast.style.transition = 'opacity 0.5s';
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 500);
-  }, 5000);
+function updateCpu(data) {
+  const percent = clampPercent(data.cpu.usage_percent);
+  setGaugeValue(cpuGauge, percent);
+  document.getElementById('cpu-reading').textContent = `${Math.round(percent)}%`;
+  const processorName = data.cpu.processor_name || 'Unknown CPU';
+  document.getElementById('cpu-name').textContent = processorName;
 }
 
-// ─── Browser Push Notification ──────────────────────────
-function sendPushNotification(title, message) {
-  if (Notification.permission === 'granted') {
-    new Notification(title, {
-      body: message,
-      icon: '🖥️'
-    });
-  }
+function updateMemory(data) {
+  const percent = clampPercent(data.memory.usage_percent);
+  setGaugeValue(memoryGauge, percent);
+  document.getElementById('memory-reading').textContent = `${Math.round(percent)}%`;
 }
 
-// ─── Request Notification Permission ────────────────────
-function requestNotificationPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
+function updateGpu(data) {
+  const gpu = data.gpu || {};
+  const usage = Number(gpu.usage_percent);
+  const percent = Number.isFinite(usage) ? clampPercent(usage) : 0;
+  setGaugeValue(gpuGauge, percent);
+
+  const valueText = gpu.detected ? `${Math.round(percent)}%` : 'N/A';
+  document.getElementById('gpu-reading').textContent = valueText;
 }
 
-// ─── Alert Thresholds ───────────────────────────────────
-const THRESHOLDS = {
-  cpu: 80,
-  memory: 85,
-  disk: 90
-};
+function updateNetwork(data) {
+  const network = data.network || {};
+  const rx = Number(network.bytes_recv_mb) || 0;
+  const tx = Number(network.bytes_sent_mb) || 0;
 
-// Track active alerts to avoid spamming
-const activeAlerts = {
-  cpu: false,
-  memory: false,
-  disk: false
-};
-
-function checkAlerts(data) {
-  // CPU Alert
-  if (data.cpu.usage_percent > THRESHOLDS.cpu) {
-    if (!activeAlerts.cpu) {
-      activeAlerts.cpu = true;
-      const msg = `CPU usage is at ${data.cpu.usage_percent}% — above ${THRESHOLDS.cpu}% threshold!`;
-      showToast('High CPU Usage', msg);
-      sendPushNotification('🚨 High CPU Usage', msg);
-    }
-  } else {
-    activeAlerts.cpu = false;
-  }
-
-  // Memory Alert
-  if (data.memory.usage_percent > THRESHOLDS.memory) {
-    if (!activeAlerts.memory) {
-      activeAlerts.memory = true;
-      const msg = `Memory usage is at ${data.memory.usage_percent}% — above ${THRESHOLDS.memory}% threshold!`;
-      showToast('High Memory Usage', msg);
-      sendPushNotification('🚨 High Memory Usage', msg);
-    }
-  } else {
-    activeAlerts.memory = false;
-  }
-
-  // Disk Alert
-  if (data.disk.usage_percent > THRESHOLDS.disk) {
-    if (!activeAlerts.disk) {
-      activeAlerts.disk = true;
-      const msg = `Disk usage is at ${data.disk.usage_percent}% — above ${THRESHOLDS.disk}% threshold!`;
-      showToast('High Disk Usage', msg);
-      sendPushNotification('🚨 High Disk Usage', msg);
-    }
-  } else {
-    activeAlerts.disk = false;
-  }
+  document.getElementById('rx-speed').textContent = `${rx.toFixed(1)} MB/s`;
+  document.getElementById('tx-speed').textContent = `${tx.toFixed(1)} MB/s`;
 }
 
-// ─── Fetch Metrics ───────────────────────────────────────
+function updateDisk(data) {
+  const disk = data.disk || {};
+  const total = Number(disk.total_gb) || 0;
+  const used = Number(disk.used_gb) || 0;
+  const percent = clampPercent(disk.usage_percent);
+  const box = document.getElementById('disk-box');
+  box.textContent = `HDD ${used.toFixed(1)} GB / ${total.toFixed(1)} GB (${Math.round(percent)}%)`;
+}
+
 async function fetchMetrics() {
   try {
-    const res  = await fetch('/metrics');
-    const data = await res.json();
+    const response = await fetch('/metrics');
+    const data = await response.json();
 
     document.getElementById('timestamp').textContent =
-      'Last updated: ' + new Date(data.timestamp).toLocaleTimeString();
+      `Last updated: ${new Date(data.timestamp).toLocaleTimeString()}`;
 
-    document.getElementById('cpu-percent').textContent = data.cpu.usage_percent + '%';
-    document.getElementById('cpu-cores').textContent   = data.cpu.core_count + ' logical cores';
-    document.getElementById('cpu-name').textContent    = data.cpu.processor_name || 'Unknown CPU';
-    updateChart(cpuChart, data.cpu.usage_percent);
-
-    const gpuDetected = data.gpu && data.gpu.detected;
-    const gpuUsage = (data.gpu && typeof data.gpu.usage_percent === 'number') ? data.gpu.usage_percent : null;
-    document.getElementById('gpu-percent').textContent = gpuUsage !== null ? gpuUsage + '%' : '--%';
-    document.getElementById('gpu-name').textContent = gpuDetected ? data.gpu.name : 'No GPU detected';
-    document.getElementById('gpu-status').textContent = gpuDetected ? 'Detected' : 'Unavailable';
-    updateChart(gpuChart, gpuUsage !== null ? gpuUsage : 0);
-
-    document.getElementById('mem-percent').textContent = data.memory.usage_percent + '%';
-    document.getElementById('mem-detail').textContent  =
-      data.memory.used_gb + ' / ' + data.memory.total_gb + ' GB';
-    updateChart(memChart, data.memory.usage_percent);
-
-    document.getElementById('disk-percent').textContent = data.disk.usage_percent + '%';
-    document.getElementById('disk-detail').textContent  =
-      data.disk.used_gb + ' / ' + data.disk.total_gb + ' GB';
-    updateChart(diskChart, data.disk.usage_percent);
-
-    document.getElementById('net-sent').textContent = data.network.bytes_sent_mb + ' MB';
-    document.getElementById('net-recv').textContent = data.network.bytes_recv_mb + ' MB';
-
-    // Check alerts every fetch
-    checkAlerts(data);
-
-  } catch (err) {
-    console.error('Failed to fetch metrics:', err);
+    updateCpu(data);
+    updateMemory(data);
+    updateGpu(data);
+    updateNetwork(data);
+    updateDisk(data);
+  } catch (error) {
+    console.error('Failed to fetch metrics:', error);
   }
 }
 
-// ─── Init ────────────────────────────────────────────────
-requestNotificationPermission();
 fetchMetrics();
 setInterval(fetchMetrics, 3000);
