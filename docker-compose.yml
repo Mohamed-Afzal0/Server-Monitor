@@ -1,0 +1,16 @@
+services:
+  server-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server-monitor
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/metrics')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

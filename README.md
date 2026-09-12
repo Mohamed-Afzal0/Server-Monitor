@@ -51,6 +51,20 @@ python app.py
 
 Then open your browser at `http://localhost:5000`
 
+### Run with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Then open your browser at `http://localhost:5000`. Stop the service with:
+
+```bash
+docker compose down
+```
+
+The container serves the app with Gunicorn and includes a health check for `/metrics`.
+
 ---
 
 ## 📊 API Endpoints
@@ -114,9 +128,11 @@ server-monitor/
 │   ├── script.js               # Metrics updates and interactions
 │   └── speed-dial-example.html # Standalone circular gauge prototype
 
-├── app.py               # Flask API
-
-└── requirements.txt            # Python dependencies
+├── Dockerfile                   # Production container image
+├── docker-compose.yml           # Local container orchestration
+├── .dockerignore                # Docker build exclusions
+├── app.py                       # Flask API
+└── requirements.txt             # Python dependencies
 
 ---
 
