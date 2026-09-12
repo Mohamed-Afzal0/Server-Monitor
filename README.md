@@ -2,6 +2,8 @@
 
 A real-time system monitoring dashboard built with Python, Flask, psutil, HTML, CSS, and JavaScript.
 
+![Server Monitor dashboard](Screenshots/ScreenShot01.png)
+
 ---
 
 ## 🚀 Features
